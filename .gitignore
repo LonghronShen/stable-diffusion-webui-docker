@@ -1,2 +1,4 @@
 /dev
 /.devcontainer
+
+docker-compose.local.yml
