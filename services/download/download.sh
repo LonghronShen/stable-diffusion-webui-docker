@@ -13,7 +13,13 @@ EOF
 
 echo "Downloading, this might take a while..."
 
-aria2c --all-proxy=$HTTPS_PROXY --input-file /docker/links.txt --dir /cache/models --continue
+aria2c \
+    --https-proxy=$HTTPS_PROXY \
+    --http-proxy=$HTTP_PROXY \
+    --no-proxy=$NO_PROXY \
+    --input-file /docker/links.txt \
+    --dir /cache/models \
+    --continue
 
 echo "Checking SHAs..."
 
