@@ -18,13 +18,14 @@ name: webui-docker
 
 services:
   download:
-    build: ./services/download/
+    build:
+      context: ./services/download/
+      args:
+        - HTTPS_PROXY=
+        - HTTP_PROXY=
     profiles: ["download"]
     volumes:
       - *v1
-    environment:
-      - HTTPS_PROXY=
-      - HTTP_PROXY=
 
   hlky:
     <<: *base_service
@@ -36,16 +37,18 @@ services:
   automatic1111: &automatic
     <<: *base_service
     profiles: ["auto"]
-    build: ./services/AUTOMATIC1111
+    build:
+      context: ./services/AUTOMATIC1111
+      args:
+        - NO_PROXY=localhost
+        - HTTPS_PROXY=
+        - HTTP_PROXY=
     volumes:
       - *v1
       - *v2
       - ./services/AUTOMATIC1111/config.json:/stable-diffusion-webui/config.json
     environment:
       - CLI_ARGS=--allow-code --lowvram
-      - NO_PROXY=localhost
-      - HTTPS_PROXY=
-      - HTTP_PROXY=
 
   automatic1111-cpu:
     <<: *automatic

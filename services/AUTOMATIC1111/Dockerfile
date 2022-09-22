@@ -2,6 +2,9 @@
 
 FROM alpine/git:2.36.2 as download
 
+ARG HTTPS_PROXY
+ARG HTTP_PROXY
+
 ENV HTTPS_PROXY=${HTTPS_PROXY}
 ENV HTTP_PROXY=${HTTP_PROXY}
 
@@ -24,6 +27,10 @@ EOF
 
 
 FROM continuumio/miniconda3:4.12.0
+
+ARG HTTPS_PROXY
+ARG HTTP_PROXY
+ARG NO_PROXY
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
