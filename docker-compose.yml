@@ -22,6 +22,9 @@ services:
     profiles: ["download"]
     volumes:
       - *v1
+    environment:
+      - HTTPS_PROXY=
+      - HTTP_PROXY=
 
   hlky:
     <<: *base_service
@@ -39,7 +42,10 @@ services:
       - *v2
       - ./services/AUTOMATIC1111/config.json:/stable-diffusion-webui/config.json
     environment:
-      - CLI_ARGS=--allow-code --medvram
+      - CLI_ARGS=--allow-code --lowvram
+      - NO_PROXY=localhost
+      - HTTPS_PROXY=
+      - HTTP_PROXY=
 
   automatic1111-cpu:
     <<: *automatic

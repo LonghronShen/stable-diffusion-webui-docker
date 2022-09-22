@@ -2,8 +2,13 @@
 
 FROM alpine/git:2.36.2 as download
 
+ENV HTTPS_PROXY=${HTTPS_PROXY}
+ENV HTTP_PROXY=${HTTP_PROXY}
 
-RUN git clone https://github.com/CompVis/stable-diffusion.git repositories/stable-diffusion && cd repositories/stable-diffusion && git reset --hard 69ae4b35e0a0f6ee1af8bb9a5d0016ccb27e36dc
+RUN git clone https://github.com/CompVis/stable-diffusion.git repositories/stable-diffusion && \
+  cd repositories/stable-diffusion && \
+  git reset --hard 69ae4b35e0a0f6ee1af8bb9a5d0016ccb27e36dc && \
+  sed -i '/check_safety/a \    return x_image, False' ./scripts/txt2img.py
 
 RUN git clone https://github.com/sczhou/CodeFormer.git repositories/CodeFormer && cd repositories/CodeFormer && git reset --hard c5b4593074ba6214284d6acd5f1719b6c5d739af
 RUN git clone https://github.com/salesforce/BLIP.git repositories/BLIP && cd repositories/BLIP && git reset --hard 48211a1594f1321b00f14c9f7a5b4813144b2fb9
@@ -23,6 +28,8 @@ FROM continuumio/miniconda3:4.12.0
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV HTTPS_PROXY=${HTTPS_PROXY}
+ENV HTTP_PROXY=${HTTP_PROXY}
 
 RUN conda install python=3.8.5 && conda clean -a -y
 RUN conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 -c pytorch && conda clean -a -y
@@ -65,6 +72,9 @@ RUN chmod +x /docker/mount.sh && python3 /docker/info.py ${ROOT}/modules/ui.py
 
 WORKDIR ${WORKDIR}
 EXPOSE 7860
+
+ENV NO_PROXY=${NO_PROXY}
+
 # run, -u to not buffer stdout / stderr
 CMD /docker/mount.sh && \
   python3 -u ../../webui.py --listen --port 7860 --hide-ui-dir-config --ckpt-dir /cache/custom-models --ckpt /cache/models/model.ckpt ${CLI_ARGS}
