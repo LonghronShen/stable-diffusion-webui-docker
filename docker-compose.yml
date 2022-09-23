@@ -21,6 +21,7 @@ services:
     build:
       context: ./services/download/
       args:
+        - NO_PROXY=localhost
         - HTTPS_PROXY=
         - HTTP_PROXY=
     profiles: ["download"]

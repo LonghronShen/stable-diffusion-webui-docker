@@ -9,6 +9,7 @@ skip_download=${2}
 # set proxy env variables if you need
 # export HTTPS_PROXY=
 # export HTTP_PROXY=
+export NO_PROXY=localhost
 
 envsubst < docker-compose.template.yml > docker-compose.local.yml
 
