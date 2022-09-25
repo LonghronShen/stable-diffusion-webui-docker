@@ -58,7 +58,9 @@ services:
     profiles: ["auto-cpu"]
     deploy: {}
     environment:
-      - CLI_ARGS=--no-half --precision full
+      - CLI_ARGS=--allow-code --no-half --precision full
+      - HTTPS_PROXY=$HTTPS_PROXY
+      - HTTP_PROXY=$HTTP_PROXY
 
   lstein:
     <<: *base_service
