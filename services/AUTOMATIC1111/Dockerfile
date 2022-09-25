@@ -26,7 +26,7 @@ rm -rf repositories/taming-transformers/data repositories/taming-transformers/as
 EOF
 
 
-FROM continuumio/miniconda3:4.12.0
+FROM continuumio/miniconda3:4.12.0 AS runtime
 
 ARG HTTPS_PROXY
 ARG HTTP_PROXY
@@ -51,9 +51,7 @@ git reset --hard 7e77938230d4fefb6edccdba0b80b61d8416673e
 pip install --prefer-binary --no-cache-dir -r requirements.txt
 EOF
 
-ENV ROOT=/stable-diffusion-webui \
-  WORKDIR=/stable-diffusion-webui/repositories/stable-diffusion
-
+ENV ROOT=/stable-diffusion-webui
 
 COPY --from=download /git/ ${ROOT}
 RUN pip install --prefer-binary --no-cache-dir -r ${ROOT}/repositories/CodeFormer/requirements.txt
@@ -71,17 +69,17 @@ EOF
 
 RUN pip install --prefer-binary -U --no-cache-dir opencv-python-headless
 
-ENV TRANSFORMERS_CACHE=/cache/transformers TORCH_HOME=/cache/torch CLI_ARGS=""
-
 COPY . /docker
-RUN chmod +x /docker/mount.sh && python3 /docker/info.py ${ROOT}/modules/ui.py
 
+RUN chmod +x /docker/*.sh && \
+  python3 /docker/info.py ${ROOT}/modules/ui.py
 
-WORKDIR ${WORKDIR}
+FROM runtime as finnal
+
 EXPOSE 7860
 
-ENV NO_PROXY=${NO_PROXY}
+WORKDIR /stable-diffusion-webui/repositories/stable-diffusion
 
-# run, -u to not buffer stdout / stderr
-CMD /docker/mount.sh && \
-  python3 -u ../../webui.py --listen --port 7860 --hide-ui-dir-config --ckpt-dir /cache/custom-models --ckpt /cache/models/model.ckpt ${CLI_ARGS}
+ENV TRANSFORMERS_CACHE=/cache/transformers TORCH_HOME=/cache/torch CLI_ARGS=""
+
+CMD /docker/run.sh
