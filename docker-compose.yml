@@ -50,6 +50,8 @@ services:
       - ./services/AUTOMATIC1111/config.json:/stable-diffusion-webui/config.json
     environment:
       - CLI_ARGS=--allow-code --lowvram
+      - HTTPS_PROXY=
+      - HTTP_PROXY=
 
   automatic1111-cpu:
     <<: *automatic
