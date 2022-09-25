@@ -4,7 +4,8 @@ set -x
 
 # where [ui] is one of: auto | auto-cpu | hlky | lstein
 ui=${1:-"auto"}
-skip_download=${2}
+skip_build=${2}
+skip_download=${3}
 
 # set proxy env variables if you need
 # export HTTPS_PROXY=
@@ -17,4 +18,8 @@ if [[ -z "$skip_download" ]]; then
     docker compose -f docker-compose.local.yml --profile download up --build
 fi
 
-docker compose -f docker-compose.local.yml --profile $ui up --build
+if [[ -z "$skip_build" ]]; then
+    docker compose -f docker-compose.local.yml --profile $ui up --build
+else
+    docker compose -f docker-compose.local.yml --profile $ui up
+fi
