@@ -52,6 +52,7 @@ services:
       - CLI_ARGS=--allow-code --lowvram
       - HTTPS_PROXY=$HTTPS_PROXY
       - HTTP_PROXY=$HTTP_PROXY
+      - NO_PROXY=localhost
 
   automatic1111-cpu:
     <<: *automatic
@@ -61,6 +62,7 @@ services:
       - CLI_ARGS=--allow-code --no-half --precision full
       - HTTPS_PROXY=$HTTPS_PROXY
       - HTTP_PROXY=$HTTP_PROXY
+      - NO_PROXY=localhost
 
   lstein:
     <<: *base_service
