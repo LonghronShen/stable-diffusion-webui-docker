@@ -1,18 +1,19 @@
 version: '3.9'
 
-x-base_service: &base_service
-    ports:
-      - "7860:7860"
-    volumes:
-      - &v1 ./cache:/cache
-      - &v2 ./output:/output
-    deploy:
-      resources:
-        reservations:
-          devices:
-              - driver: nvidia
-                device_ids: ['0']
-                capabilities: [gpu]
+x-base_service:
+  &base_service
+  ports:
+    - "7860:7860"
+  volumes:
+    - &v1 ./cache:/cache
+    - &v2 ./output:/output
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            device_ids: [ '0' ]
+            capabilities: [ gpu ]
 
 name: webui-docker
 
@@ -24,20 +25,23 @@ services:
         - NO_PROXY=$NO_PROXY
         - HTTPS_PROXY=$HTTPS_PROXY
         - HTTP_PROXY=$HTTP_PROXY
-    profiles: ["download"]
+    profiles: [ "download" ]
     volumes:
       - *v1
+    environment:
+      - NO_PROXY=localhost
 
   hlky:
     <<: *base_service
-    profiles: ["hlky"]
+    profiles: [ "hlky" ]
     build: ./services/hlky/
     environment:
       - CLI_ARGS=--optimized-turbo
 
-  automatic1111: &automatic
+  automatic1111:
+    &automatic
     <<: *base_service
-    profiles: ["auto"]
+    profiles: [ "auto" ]
     build:
       context: ./services/AUTOMATIC1111
       args:
@@ -56,7 +60,7 @@ services:
 
   automatic1111-cpu:
     <<: *automatic
-    profiles: ["auto-cpu"]
+    profiles: [ "auto-cpu" ]
     deploy: {}
     environment:
       - CLI_ARGS=--allow-code --no-half --precision full
@@ -66,7 +70,7 @@ services:
 
   lstein:
     <<: *base_service
-    profiles: ["lstein"]
+    profiles: [ "lstein" ]
     build: ./services/lstein/
     environment:
       - PRELOAD=false
